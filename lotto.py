@@ -111,7 +111,7 @@ def apply_user_pick(user_nums, g1, g2, g3):
 # 6. 가중치 기반 자동 배분
 # -----------------------------
 def weighted_allocate(g1, g2, g3, total_pick):
-    w1, w2, w3 = 0.8, 1.0, 1.2
+    w1, w2, w3 = 0.7, 1.8, 0.7
 
     total = len(g1) * w1 + len(g2) * w2 + len(g3) * w3
 
@@ -161,63 +161,89 @@ def check_consecutive(numbers, max_consecutive):
 
 
 # -----------------------------
+
 # 최종 번호 생성
+
 # -----------------------------
+
 def generate_numbers(numbers, user_numbers, odd_count, even_count, max_consecutive):
 
+    
     freq = analyze_frequency(numbers)
 
     g1, g2, g3 = split_groups(freq)
 
-    user_set, g1, g2, g3 = apply_user_pick(user_numbers, g1, g2, g3)
+    attempt = 0
 
-    remain = 6 - len(user_set)
+    while attempt < 1000:
 
-    n1, n2, n3 = weighted_allocate(g1, g2, g3, remain)
+        attempt += 1
 
-    result = set(user_set)
+        # 그룹 복사
+        temp_g1 = g1.copy()
+        temp_g2 = g2.copy()
+        temp_g3 = g3.copy()
 
-    if g1:
-        result.update(random.sample(g1, min(n1, len(g1))))
+        # 유저 번호 적용
+        user_set, temp_g1, temp_g2, temp_g3 = apply_user_pick(
+            user_numbers,
+            temp_g1,
+            temp_g2,
+            temp_g3
+        )
 
-    if g2:
-        result.update(random.sample(g2, min(n2, len(g2))))
+        remain = 6 - len(user_set)
 
-    if g3:
-        result.update(random.sample(g3, min(n3, len(g3))))
+        n1, n2, n3 = weighted_allocate(
+            temp_g1,
+            temp_g2,
+            temp_g3,
+            remain
+        )
 
-    # 부족하면 랜덤 추가
-    all_nums = list(range(1, 46))
+        result = set(user_set)
 
-    while len(result) < 6:
+        if temp_g1:
+            result.update(random.sample(temp_g1, min(n1, len(temp_g1))))
 
-        result.add(random.choice(all_nums))
+        if temp_g2:
+            result.update(random.sample(temp_g2, min(n2, len(temp_g2))))
 
-    result = sorted(result)
+        if temp_g3:
+            result.update(random.sample(temp_g3, min(n3, len(temp_g3))))
 
-    # -----------------------------
-    # 홀짝 필터
-    # -----------------------------
-    if odd_count is not None:
+        # 부족하면 랜덤 추가
+        all_nums = list(range(1, 46))
 
-        if not check_odd_even(result, odd_count, even_count):
+        while len(result) < 6:
 
-            return generate_numbers(
-                numbers, user_numbers, odd_count, even_count, max_consecutive
-            )
+            result.add(random.choice(all_nums))
 
-    # -----------------------------
-    # 연속 숫자 필터
-    # -----------------------------
-    if max_consecutive is not None:
+        result = sorted(result)
 
-        if not check_consecutive(result, max_consecutive):
+        # -----------------------------
+        # 홀짝 필터
+        # -----------------------------
+        if odd_count is not None:
 
-            return generate_numbers(
-                numbers, user_numbers, odd_count, even_count, max_consecutive
-            )
+            if not check_odd_even(result, odd_count, even_count):
 
-    return result
+                continue
+
+        # -----------------------------
+        # 연속 숫자 필터
+        # -----------------------------
+        if max_consecutive is not None:
+
+            if not check_consecutive(result, max_consecutive):
+
+                continue
+
+        return result
+
+    raise ValueError("조건에 맞는 번호를 생성할 수 없습니다.")
+
+
 
 
 # -----------------------------
@@ -225,31 +251,37 @@ def generate_numbers(numbers, user_numbers, odd_count, even_count, max_consecuti
 # -----------------------------
 def generate_random_numbers(user_numbers, odd_count, even_count, max_consecutive):
 
-    result = set(user_numbers)
+    
+    attempt = 0
 
-    while len(result) < 6:
+    while attempt < 1000:
 
-        result.add(random.randint(1, 45))
+        attempt += 1
 
-    result = sorted(result)
+        result = set(user_numbers)
 
-    # 홀짝 필터
-    if odd_count is not None:
+        while len(result) < 6:
 
-        if not check_odd_even(result, odd_count, even_count):
+            result.add(random.randint(1, 45))
 
-            return generate_random_numbers(
-                user_numbers, odd_count, even_count, max_consecutive
-            )
+        result = sorted(result)
 
-    # 연속 숫자 필터
-    if max_consecutive is not None:
+        # 홀짝 필터
+        if odd_count is not None:
 
-        if not check_consecutive(result, max_consecutive):
+            if not check_odd_even(result, odd_count, even_count):
 
-            return generate_random_numbers(
-                user_numbers, odd_count, even_count, max_consecutive
-            )
+                continue
 
-    return result
+        # 연속 숫자 필터
+        if max_consecutive is not None:
+
+            if not check_consecutive(result, max_consecutive):
+
+                continue
+
+        return result
+
+    raise ValueError("조건에 맞는 번호를 생성할 수 없습니다.")
+
 

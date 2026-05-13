@@ -90,7 +90,7 @@ with st.container():
 """, unsafe_allow_html=True)
 
     mode = st.radio(
-    "",
+    "생성 방식 선택",
     ["당첨 횟수 데이터 기반 생성", "일반 생성 (자동)"],
     label_visibility="collapsed"
 )
@@ -260,15 +260,23 @@ if st.button("행운 번호 받기"):
 
             while len(results) < 5 and attempts < 100:
 
-                result = tuple(
-                    lotto.generate_numbers(
-                        numbers, user_numbers, odd_count, even_count, max_consecutive
+                try:
+
+                    result = tuple(
+                        lotto.generate_random_numbers(
+                            user_numbers,
+                            odd_count,
+                            even_count,
+                            max_consecutive
+                        )
                     )
-                )
 
-                results.add(result)
+                    results.add(result)
 
-                attempts += 1
+                except ValueError:
+
+                    st.error("현재 조건으로는 번호 생성이 어렵습니다. 필터 조건을 확인해주세요.")
+                    st.stop()
 
         # -----------------------------
         # 완전 랜덤 생성
@@ -277,15 +285,23 @@ if st.button("행운 번호 받기"):
 
             while len(results) < 5 and attempts < 100:
 
-                result = tuple(
-                    lotto.generate_random_numbers(
-                        user_numbers, odd_count, even_count, max_consecutive
+                try:
+
+                    result = tuple(
+                        lotto.generate_random_numbers(
+                            user_numbers,
+                            odd_count,
+                            even_count,
+                            max_consecutive
+                        )
                     )
-                )
 
-                results.add(result)
+                    results.add(result)
 
-                attempts += 1
+                except ValueError:
+
+                    st.error("현재 조건으로는 번호 생성이 어렵습니다. 필터 조건을 확인해주세요.")
+                    st.stop()
 
         # -----------------------------
         # 번호 색상 함수
