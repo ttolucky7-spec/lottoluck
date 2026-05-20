@@ -222,6 +222,38 @@ margin-bottom:6px;
             except:
 
                 st.warning("숫자를 쉼표(,)로 구분해서 입력해주세요.")
+        
+        # 제외할 숫자 입력
+        exclude_input = st.text_input(
+            "제외할 숫자 입력 (쉼표로 구분)",
+            placeholder="예: 3, 7, 22"
+        )
+
+        # 문자열 → 숫자 리스트 변환
+        exclude_numbers = []
+
+        if exclude_input:
+
+            try:
+
+                exclude_numbers = [
+                    int(x.strip())
+                    for x in exclude_input.split(",")
+                    if x.strip()
+                ]
+
+                # 범위 검사
+                for num in exclude_numbers:
+
+                    if num < 1 or num > 45:
+
+                        st.error("제외 숫자는 1~45 사이여야 합니다.")
+                        st.stop()
+
+            except:
+
+                st.error("숫자만 입력해주세요.")
+                st.stop()
 
 
 st.markdown("<div style='margin-top:30px;'></div>", unsafe_allow_html=True)
@@ -263,11 +295,12 @@ if st.button("행운 번호 받기"):
                 try:
 
                     result = tuple(
-                        lotto.generate_random_numbers(
+                        lotto.generate_weighted_numbers(
                             user_numbers,
                             odd_count,
                             even_count,
-                            max_consecutive
+                            max_consecutive,
+                            exclude_numbers
                         )
                     )
 
@@ -292,7 +325,8 @@ if st.button("행운 번호 받기"):
                             user_numbers,
                             odd_count,
                             even_count,
-                            max_consecutive
+                            max_consecutive,
+                            exclude_numbers
                         )
                     )
 

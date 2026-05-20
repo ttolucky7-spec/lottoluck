@@ -166,7 +166,22 @@ def check_consecutive(numbers, max_consecutive):
 
 # -----------------------------
 
-def generate_numbers(numbers, user_numbers, odd_count, even_count, max_consecutive):
+def generate_weighted_numbers(
+    user_numbers,
+    odd_count,
+    even_count,
+    max_consecutive,
+    exclude_numbers
+):
+
+    # 사용자 번호와 제외 번호 충돌 검사
+    for num in user_numbers:
+
+        if num in exclude_numbers:
+
+            raise ValueError(
+                f"{num}번은 포함 번호와 제외 번호에 동시에 설정되었습니다."
+            )
 
     
     freq = analyze_frequency(numbers)
@@ -217,7 +232,14 @@ def generate_numbers(numbers, user_numbers, odd_count, even_count, max_consecuti
 
         while len(result) < 6:
 
-            result.add(random.choice(all_nums))
+            num = random.randint(1, 45)
+
+            # 제외 숫자면 다시 생성
+            if num in exclude_numbers:
+
+                continue
+
+            result.add(num)
 
         result = sorted(result)
 
@@ -249,9 +271,25 @@ def generate_numbers(numbers, user_numbers, odd_count, even_count, max_consecuti
 # -----------------------------
 # 완전 랜덤 번호 생성
 # -----------------------------
-def generate_random_numbers(user_numbers, odd_count, even_count, max_consecutive):
+def generate_random_numbers(
+    user_numbers,
+    odd_count,
+    even_count,
+    max_consecutive,
+    exclude_numbers
+):
 
-    
+
+
+    # 사용자 번호와 제외 번호 충돌 검사
+    for num in user_numbers:
+
+        if num in exclude_numbers:
+
+            raise ValueError(
+                f"{num}번은 포함 번호와 제외 번호에 동시에 설정되었습니다."
+            )
+
     attempt = 0
 
     while attempt < 1000:
@@ -262,7 +300,13 @@ def generate_random_numbers(user_numbers, odd_count, even_count, max_consecutive
 
         while len(result) < 6:
 
-            result.add(random.randint(1, 45))
+            num = random.randint(1, 45)
+
+            if num in exclude_numbers:
+
+                continue
+
+            result.add(num)
 
         result = sorted(result)
 
