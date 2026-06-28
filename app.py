@@ -73,7 +73,7 @@ header_html = """
 
 st.markdown(header_html, unsafe_allow_html=True)
 
-MAX_ROUND = 1229
+MAX_ROUND = 1230
 
 # -----------------------------
 # 생성 방식 선택
